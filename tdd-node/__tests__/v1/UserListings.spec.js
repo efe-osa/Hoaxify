@@ -88,7 +88,7 @@ describe("User Listings", () => {
     expect(content.length).toEqual(10);
   });
 });
-describe.only("Get User", () => {
+describe("Get User", () => {
   it("returns 404 and message when user not found", async () => {
     const currentTime = new Date().getTime();
     const fiveSecs = 5 * 1000;
