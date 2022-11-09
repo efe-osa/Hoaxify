@@ -1,0 +1,18 @@
+{
+  "database": {
+    "database": "hoaxify",
+    "username": "my-db-user",
+    "password": "db-pass",
+    "dialect": "sqlite",
+    "storage": "./database.sqlite",
+    "logging": false
+  },
+  "mail": {
+    "host": "smtp.ethereal.email",
+    "port": 587,
+    "auth": {
+      "user": "thelma.rolfson68@ethereal.email",
+      "pass": "kHfMNkGUvU2kr1cWra"
+    }
+  }
+}

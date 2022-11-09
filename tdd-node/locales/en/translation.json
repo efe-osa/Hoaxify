@@ -1,0 +1,13 @@
+{
+  "username_null": "username cannot be empty",
+  "username_size": "Must have min of 5 characters and max of 12",
+  "email_null": "email cannot be empty",
+  "email_invalid": "email is not valid",
+  "email_in_use": "email has been used",
+  "password_null": "password cannot be empty",
+  "password_size": "password must be at least 6 characters",
+  "password_pattern": "password must have at least 1 uppercase letter, 1 lowercase letter and 1 number",
+  "user_create_success": "User created!",
+  "email_failure": "Failed to send message",
+  "account_activation_failure": "This account is either active or the token is invalid"
+}
