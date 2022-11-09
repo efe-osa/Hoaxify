@@ -2,6 +2,7 @@ const express = require("express");
 const UserService = require("../utils/UserService");
 const { check, validationResult } = require("express-validator");
 const ValidationException = require("../utils/error/ValidationException");
+const pagination = require("../middleware/paginagtion");
 const router = express.Router();
 
 router.post(
@@ -56,21 +57,24 @@ router.post("/users/token/:token", async (req, res, next) => {
   }
 });
 
-router.get("/users", async (req, res, next) => {
+router.get("/users", pagination, async (req, res, next) => {
+  const { limit, page } = req.pagination;
   try {
-    const { query } = req;
-    let page = parseInt(query?.page || 0, 10);
-    let limit = parseInt(query?.limit || 10, 10);
-    if (page < 0) {
-      page = 0;
-    }
-    if (limit > 10 || limit < 1) {
-      limit = 10;
-    }
     const users = await UserService.getAll({ limit, page, text: "" });
     return res.send(users);
   } catch (error) {
     next(error);
   }
 });
+
+router.get("/users/:id", async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const user = await UserService.getOne(+id);
+    return res.send(user);
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;

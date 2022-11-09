@@ -7,16 +7,41 @@ const User = require("../models/User");
 const EmailService = require("./EmailService");
 const EmailException = require("./error/EmailException");
 const InvalidTokenException = require("./error/InvalidTokenException");
+const UserNotFoundException = require("./error/UserNotFoundException");
 const frontend_uri = "http://localhost:3000";
 
 const generateToken = (length) => {
   return crypto.randomBytes(length).toString("hex").substring(0, length);
 };
 
+const getOne = async (id) => {
+  const user = await User.findOne({
+    where: {
+      id,
+      inactive: false,
+    },
+    attributes: ["id", "username", "email"],
+  });
+  if (!user) {
+    throw new UserNotFoundException();
+  }
+  return user;
+};
+
 const getAll = async (query) => {
   const { page, limit, text } = query;
   try {
-    const users = await User.findAndCountAll({
+    const count = await User.count({
+      where: {
+        inactive: {
+          [Op.eq]: false,
+        },
+      },
+    });
+    const totalPages = Math.ceil(count / limit);
+    const offset = page > totalPages ? 0 : page * limit;
+
+    const users = await User.findAll({
       limit,
       attributes: ["id", "username", "email"],
       where: {
@@ -24,11 +49,10 @@ const getAll = async (query) => {
           [Op.eq]: false,
         },
       },
-      offset: query.page * limit,
+      offset,
     });
-    const totalPages = Math.ceil(users.count / limit);
     return {
-      content: [...users.rows],
+      content: [...users],
       page,
       limit,
       totalPages,
@@ -84,4 +108,11 @@ const activateToken = async (token) => {
   return user;
 };
 
-module.exports = { getAll, save, findByEmail, generateToken, activateToken };
+module.exports = {
+  getOne,
+  getAll,
+  save,
+  findByEmail,
+  generateToken,
+  activateToken,
+};
