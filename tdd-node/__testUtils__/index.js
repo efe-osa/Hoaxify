@@ -25,6 +25,9 @@ const addUsers = async (activeSize = 0, inactiveSize = 0) => {
     });
   }
 };
+const getUserById = async (id) => {
+  return get(`/api/1.0/users/${id}`);
+};
 const getUsers = async (query) => {
   return get("/api/1.0/users").query(query);
 };
@@ -39,6 +42,7 @@ module.exports = {
   addUsers,
   get,
   getUsers,
+  getUserById,
   post,
   postUser,
   postToken,

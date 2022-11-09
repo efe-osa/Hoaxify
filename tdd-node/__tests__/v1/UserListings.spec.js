@@ -1,4 +1,4 @@
-const { getUsers, addUsers } = require("../../__testUtils__");
+const { getUsers, getUserById, addUsers } = require("../../__testUtils__");
 const sequelize = require("../../v1/config/database");
 const User = require("../../v1/models/User");
 
@@ -78,5 +78,48 @@ describe("User Listings", () => {
     expect(content.length).toEqual(5);
     expect(content[content.length - 1].username).toEqual("hoaxuser9");
     expect(limit).toEqual(5);
+  });
+  it("returns 10 users and its size when size is set as 1000 and page is 100", async () => {
+    await addUsers(11);
+    const {
+      body: { content, limit },
+    } = await getUsers({ page: 100, limit: 1000 });
+    expect(limit).toEqual(10);
+    expect(content.length).toEqual(10);
+  });
+});
+describe.only("Get User", () => {
+  it("returns 404 and message when user not found", async () => {
+    const currentTime = new Date().getTime();
+    const fiveSecs = 5 * 1000;
+    const fiveSecondsAfter = currentTime + fiveSecs;
+    const {
+      status,
+      body: { path, timestamp, message },
+    } = await getUserById(1);
+
+    expect(timestamp).toBeLessThan(fiveSecondsAfter);
+    expect(timestamp).toBeGreaterThan(currentTime);
+    expect(status).toEqual(404);
+    expect(path).toEqual("/api/1.0/users/1");
+    expect(message).toEqual("user_not_found");
+  });
+  it("returns user with 200 when fetched by id", async () => {
+    await addUsers(11);
+    const user = await User.findOne({
+      where: {
+        id: 1,
+      },
+    });
+    const { body, status } = await getUserById(1);
+    expect(status).toEqual(200);
+    expect(body.id).toEqual(user.id);
+  });
+  it("returns user with 404 when inactive user is fetched", async () => {
+    await addUsers(11);
+
+    const { body, status } = await getUserById(1);
+    expect(status).toEqual(404);
+    expect(body.message).toEqual("user_not_found");
   });
 });
